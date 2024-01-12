@@ -15,6 +15,7 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
+@router.get("/api/get-current-user", response_model=User, tags=["users"])
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     session: Session = Depends(get_session),

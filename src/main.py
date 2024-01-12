@@ -1,12 +1,16 @@
 import uvicorn
 import src.database as database
 from fastapi import FastAPI
-from src.routers import users
+from src.routers import users, leave_requests
 
 tags_metadata = [
     {
         "name": "users",
         "description": "Operations with users, i.e., login and registration.",
+    },
+    {
+        "name": "leave_requests",
+        "description": "Operations with leave requests, i.e, CRUD stuff.",
     },
 ]
 
@@ -16,6 +20,7 @@ database.init_db()
 
 
 app.include_router(users.router)
+app.include_router(leave_requests.router)
 
 
 @app.get("/")

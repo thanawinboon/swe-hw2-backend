@@ -24,3 +24,14 @@ class UserService(BaseService):
         result = self.session.exec(query).one_or_none()
 
         return result
+
+    def deduct_remaining_leave_days(self, username: str, days: int) -> None:
+        """
+        Deducts the specified amount of days from user's remaining leave days.
+        :param username: The username of the user to query.
+        :param days: The number of days to deduct.
+        """
+        user: User = self.get_user_by_username(username)
+        user.remaining_leave_days -= days
+        self.session.add(user)
+        self.session.commit()

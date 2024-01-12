@@ -7,3 +7,4 @@ class User(SQLModel, table=True):
     full_name: str
     username: str = Field(index=True)
     hashed_password: str
+    remaining_leave_days: int = Field(default=42)
