@@ -1,14 +1,15 @@
 from typing import Annotated
 
-import src.database as database
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session
 
-from src.hasher import hasher
+from src.services.users import UserService
+from src.utils import hasher
 from src.database import get_session
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.models import UserCreate, User
+from src.models.users import User
+from src.schemas.users import UserCreate
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -18,7 +19,7 @@ async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     session: Session = Depends(get_session),
 ):
-    user = database.get_user_by_username(token, session)
+    user = UserService(session).get_user_by_username(username=token)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -33,7 +34,10 @@ async def register(user_info: UserCreate, session: Session = Depends(get_session
     """
     Creates a user account.
     """
-    if database.get_user_by_username(user_info.username, session) is not None:
+    if (
+        UserService(session).get_user_by_username(username=user_info.username)
+        is not None
+    ):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Username already taken."
         )
@@ -43,7 +47,7 @@ async def register(user_info: UserCreate, session: Session = Depends(get_session
         full_name=user_info.full_name,
         hashed_password=hasher.hash(user_info.password),
     )
-    database.create_user(user, session)
+    UserService(session).create_user(user=user)
 
 
 @router.post("/token", tags=["users"])
@@ -54,7 +58,7 @@ async def login(
     """
     Logs a user into their account.
     """
-    user: User = database.get_user_by_username(form_data.username, session)
+    user: User = UserService(session).get_user_by_username(username=form_data.username)
     if not user or not hasher.verify(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
