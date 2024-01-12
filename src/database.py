@@ -1,7 +1,9 @@
 import os
 
-from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel import SQLModel, Session, create_engine, select
 from dotenv import load_dotenv
+
+from src.models import User
 
 load_dotenv()
 
@@ -22,3 +24,26 @@ def init_db():
 def get_session():
     with Session(engine) as session:
         yield session
+
+
+def create_user(user: User, session: Session) -> None:
+    """
+    Inserts a new user into the database.
+    :param user: The user object containing the user information.
+    :param session: The database session.
+    """
+    session.add(user)
+    session.commit()
+
+
+def get_user_by_username(username: str, session: Session) -> User:
+    """
+    Queries the database for a user by their username.
+    :param username: The username to query.
+    :param session: The database session.
+    :return: `User` corresponding to the username or `None` if no user with that username exists.
+    """
+    query = select(User).where(User.username == username)
+    result = session.exec(query).one_or_none()
+
+    return result

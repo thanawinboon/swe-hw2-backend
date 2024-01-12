@@ -1,9 +1,21 @@
 import uvicorn
 import src.database as database
 from fastapi import FastAPI
+from src.routers import users
 
-app = FastAPI()
+tags_metadata = [
+    {
+        "name": "users",
+        "description": "Operations with users, i.e., login and registration.",
+    },
+]
+
+
+app = FastAPI(openapi_tags=tags_metadata)
 database.init_db()
+
+
+app.include_router(users.router)
 
 
 @app.get("/")
