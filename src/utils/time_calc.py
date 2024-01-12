@@ -8,4 +8,4 @@ def days_between(start_date: datetime, end_date: datetime) -> int:
     :param end_date: The second date.
     :return:
     """
-    return (end_date - start_date).days
+    return (end_date - start_date).days + 1
