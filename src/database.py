@@ -11,8 +11,8 @@ DATABASE_DB = os.getenv("DATABASE_DB")
 DATABASE_PORT = os.getenv("DATABASE_PORT")
 
 DATABASE_URL = (
-    f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}",
-    "@localhost:{DATABASE_PORT}/{DATABASE_DB}",
+    f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}"
+    "@localhost:{DATABASE_PORT}/{DATABASE_DB}"
 )
 
 engine = create_engine(DATABASE_URL)
