@@ -5,13 +5,16 @@ from src.services.base import BaseService
 
 
 class UserService(BaseService):
-    def create_user(self, user: User) -> None:
+    def create_user(self, user: User) -> User:
         """
         Inserts a new user into the database.
         :param user: The user object containing the user information.
         """
         self.session.add(user)
         self.session.commit()
+        self.session.refresh(user)
+
+        return user
 
     def get_user_by_username(self, username: str) -> User:
         """

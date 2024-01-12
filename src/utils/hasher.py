@@ -10,11 +10,11 @@ def hash(password: str) -> bytes:
     return bcrypt.hashpw(password.encode("utf-8"), salt=bcrypt.gensalt())
 
 
-def verify(password: str, hashed_password: str) -> bool:
+def verify(password: str, hashed_password: bytes) -> bool:
     """
     Checks a password against a hashed password.
     :param password: The plaintext password.
     :param hashed_password: The hashed password.
     :return: True if passwords match, False otherwise.
     """
-    return bcrypt.checkpw(password.encode("utf-8"), hashed_password.encode("utf-8"))
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password)

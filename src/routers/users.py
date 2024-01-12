@@ -30,7 +30,7 @@ async def get_current_user(
     return user
 
 
-@router.post("/register", tags=["users"])
+@router.post("/register", tags=["users"], status_code=status.HTTP_201_CREATED, response_model=User)
 async def register(user_info: UserCreate, session: Session = Depends(get_session)):
     """
     Creates a user account.
@@ -48,10 +48,12 @@ async def register(user_info: UserCreate, session: Session = Depends(get_session
         full_name=user_info.full_name,
         hashed_password=hasher.hash(user_info.password),
     )
-    UserService(session).create_user(user=user)
+    user = UserService(session).create_user(user=user)
+
+    return user
 
 
-@router.post("/token", tags=["users"])
+@router.post("/token", tags=["users"], status_code=status.HTTP_200_OK)
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
