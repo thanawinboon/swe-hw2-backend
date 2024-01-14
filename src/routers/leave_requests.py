@@ -19,9 +19,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("/api/create-leave-request", tags=["leave-requests"])
 async def create_leave_request(
-    leave_request_info: LeaveRequestCreate,
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: Session = Depends(get_session),
+        leave_request_info: LeaveRequestCreate,
+        current_user: Annotated[User, Depends(get_current_user)],
+        session: Session = Depends(get_session),
 ):
     leave_request: LeaveRequest = LeaveRequest(
         requester_id=current_user.id,
@@ -38,10 +38,19 @@ async def create_leave_request(
 
 @router.get("/api/get-all-leave-requests", tags=["leave-requests"])
 async def get_all_leave_requests(
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: Session = Depends(get_session),
+        current_user: Annotated[User, Depends(get_current_user)],
+        session: Session = Depends(get_session),
 ):
     leave_requests: List[LeaveRequest] = LeaveRequestService(
         session
     ).get_all_leave_requests()
     return leave_requests
+
+
+@router.delete("/api/delete-leave-request/{leave_request_id}", tags=["leave-requests"])
+async def delete_leave_request(
+        leave_request_id: int,
+        current_user: Annotated[User, Depends(get_current_user)],
+        session: Session = Depends(get_session),
+):
+    LeaveRequestService(session).delete_leave_request(leave_request_id)

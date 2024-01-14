@@ -37,3 +37,13 @@ class LeaveRequestService(BaseService):
         result: List[LeaveRequest] = self.session.exec(query).all()
 
         return result
+
+    def delete_leave_request(self, leave_request_id: int) -> None:
+        """
+        Deletes a leave request.
+        :param leave_request_id: The id of the leave request to delete.
+        """
+        query = select(LeaveRequest).where(LeaveRequest.id == leave_request_id)
+        result = self.session.exec(query).one()
+        self.session.delete(result)
+        self.session.commit()
