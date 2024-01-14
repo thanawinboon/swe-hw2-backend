@@ -17,7 +17,7 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@router.post("/api/create-leave-request", tags=["leave-requests"])
+@router.post("/api/create-leave-request", tags=["leave-requests"], response_model=LeaveRequest)
 async def create_leave_request(
         leave_request_info: LeaveRequestCreate,
         current_user: Annotated[User, Depends(get_current_user)],
@@ -34,6 +34,8 @@ async def create_leave_request(
     UserService(session).deduct_remaining_leave_days(
         username=current_user.username, days=days_requested
     )
+
+    return LeaveRequestService(session).get_leave_request_by_id(leave_request.id)
 
 
 @router.get("/api/get-all-leave-requests", tags=["leave-requests"])

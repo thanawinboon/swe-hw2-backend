@@ -28,6 +28,17 @@ class LeaveRequestService(BaseService):
 
         return result
 
+    def get_leave_request_by_id(self, id: int) -> LeaveRequest:
+        """
+        Gets a leave request with the given id.
+        :param id: The id of the leave request to query.
+        :return: The leave request with given id.
+        """
+        query = select(LeaveRequest).where(LeaveRequest.id == id)
+        result: LeaveRequest = self.session.exec(query).one()
+
+        return result
+
     def get_all_leave_requests(self) -> List[LeaveRequest]:
         """
         Fetches all leave requests created.
