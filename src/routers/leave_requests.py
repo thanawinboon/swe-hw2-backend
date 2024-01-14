@@ -55,4 +55,7 @@ async def delete_leave_request(
         current_user: Annotated[User, Depends(get_current_user)],
         session: Session = Depends(get_session),
 ):
+    leave_request: LeaveRequest = LeaveRequestService(session).get_leave_request_by_id(leave_request_id)
+    leave_days: int = days_between(leave_request.start_date, leave_request.end_date)
+    UserService(session).increment_remaining_leave_days(leave_days)
     LeaveRequestService(session).delete_leave_request(leave_request_id)
