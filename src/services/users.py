@@ -39,7 +39,6 @@ class UserService(BaseService):
         self.session.add(user)
         self.session.commit()
 
-
     def deduct_remaining_leave_days(self, username: str, days: int) -> None:
         """
         Deducts the specified amount of days from user's remaining leave days.
