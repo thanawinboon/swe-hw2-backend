@@ -29,8 +29,12 @@ def init_db():
         result = session.exec(query).one_or_none()
 
         if result is None:
-            admin = User(username="admin", hashed_password=hasher.hash("bigchungus"), full_name="Admin Istrator",
-                         is_admin=True)
+            admin = User(
+                username="admin",
+                hashed_password=hasher.hash("bigchungus"),
+                full_name="Admin Istrator",
+                is_admin=True,
+            )
             session.add(admin)
             session.commit()
 

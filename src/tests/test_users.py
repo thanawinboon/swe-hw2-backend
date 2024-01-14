@@ -37,8 +37,8 @@ def test_create_user(session: Session, client: TestClient):
     full_name = "test user"
 
     response = client.post(
-        '/register',
-        json={"username": username, "password": password, "full_name": full_name}
+        "/register",
+        json={"username": username, "password": password, "full_name": full_name},
     )
     data = response.json()
 
@@ -55,13 +55,13 @@ def test_create_user_with_invalid_username(session: Session, client: TestClient)
     full_name = "test user"
 
     response = client.post(
-        '/register',
-        json={"username": username, "password": password, "full_name": full_name}
+        "/register",
+        json={"username": username, "password": password, "full_name": full_name},
     )
 
     response = client.post(
-        '/register',
-        json={"username": username, "password": password, "full_name": full_name}
+        "/register",
+        json={"username": username, "password": password, "full_name": full_name},
     )
     data = response.json()
 
@@ -78,7 +78,7 @@ def test_login_user(session: Session, client: TestClient):
     response = client.post(
         "/token",
         data={"username": username, "password": password, "grant_type": "password"},
-        headers={"content-type": "application/x-www-form-urlencoded"}
+        headers={"content-type": "application/x-www-form-urlencoded"},
     )
     data = response.json()
     print(data)

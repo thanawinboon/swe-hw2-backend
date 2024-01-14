@@ -58,7 +58,9 @@ class LeaveRequestService(BaseService):
         self.session.delete(leave_request)
         self.session.commit()
 
-    def set_leave_request_status(self, leave_request_id: int, status: LeaveRequestStatus) -> None:
+    def set_leave_request_status(
+        self, leave_request_id: int, status: LeaveRequestStatus
+    ) -> None:
         """
         Sets the status of a leave request.
         :param leave_request_id: The id of the leave request to set.

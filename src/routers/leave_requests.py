@@ -17,11 +17,13 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@router.post("/api/create-leave-request", tags=["leave-requests"], response_model=LeaveRequest)
+@router.post(
+    "/api/create-leave-request", tags=["leave-requests"], response_model=LeaveRequest
+)
 async def create_leave_request(
-        leave_request_info: LeaveRequestCreate,
-        current_user: Annotated[User, Depends(get_current_user)],
-        session: Session = Depends(get_session),
+    leave_request_info: LeaveRequestCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Session = Depends(get_session),
 ):
     leave_request: LeaveRequest = LeaveRequest(
         requester_id=current_user.id,
@@ -40,8 +42,8 @@ async def create_leave_request(
 
 @router.get("/api/get-all-leave-requests", tags=["leave-requests"])
 async def get_all_leave_requests(
-        current_user: Annotated[User, Depends(get_current_user)],
-        session: Session = Depends(get_session),
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Session = Depends(get_session),
 ):
     leave_requests: List[LeaveRequest] = LeaveRequestService(
         session
@@ -51,11 +53,13 @@ async def get_all_leave_requests(
 
 @router.delete("/api/delete-leave-request/{leave_request_id}", tags=["leave-requests"])
 async def delete_leave_request(
-        leave_request_id: int,
-        current_user: Annotated[User, Depends(get_current_user)],
-        session: Session = Depends(get_session),
+    leave_request_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Session = Depends(get_session),
 ):
-    leave_request: LeaveRequest = LeaveRequestService(session).get_leave_request_by_id(leave_request_id)
+    leave_request: LeaveRequest = LeaveRequestService(session).get_leave_request_by_id(
+        leave_request_id
+    )
     leave_days: int = days_between(leave_request.start_date, leave_request.end_date)
     UserService(session).increment_remaining_leave_days(leave_days)
     LeaveRequestService(session).delete_leave_request(leave_request_id)
@@ -63,9 +67,9 @@ async def delete_leave_request(
 
 @router.put("/api/approve-leave-request/{leave_request_id}", tags=["leave-requests"])
 async def approve_leave_request(
-        leave_request_id: int,
-        current_user: Annotated[User, Depends(get_current_user)],
-        session: Session = Depends(get_session),
+    leave_request_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Session = Depends(get_session),
 ):
     if not current_user.is_admin:
         raise HTTPException(
@@ -73,14 +77,16 @@ async def approve_leave_request(
             detail="Sussy activity detected.",
         )
 
-    LeaveRequestService(session).set_leave_request_status(leave_request_id, LeaveRequestStatus.approved)
+    LeaveRequestService(session).set_leave_request_status(
+        leave_request_id, LeaveRequestStatus.approved
+    )
 
 
 @router.put("/api/deny-leave-request/{leave_request_id}", tags=["leave-requests"])
-async def approve_leave_request(
-        leave_request_id: int,
-        current_user: Annotated[User, Depends(get_current_user)],
-        session: Session = Depends(get_session),
+async def deny_leave_request(
+    leave_request_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Session = Depends(get_session),
 ):
     if not current_user.is_admin:
         raise HTTPException(
@@ -88,4 +94,6 @@ async def approve_leave_request(
             detail="Sussy activity detected.",
         )
 
-    LeaveRequestService(session).set_leave_request_status(leave_request_id, LeaveRequestStatus.denied)
+    LeaveRequestService(session).set_leave_request_status(
+        leave_request_id, LeaveRequestStatus.denied
+    )

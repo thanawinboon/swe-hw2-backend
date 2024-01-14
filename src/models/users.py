@@ -1,6 +1,4 @@
-import enum
-
-from sqlmodel import Field, SQLModel, Column, Enum
+from sqlmodel import Field, SQLModel
 from typing import Optional
 
 

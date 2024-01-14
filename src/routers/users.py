@@ -30,7 +30,12 @@ async def get_current_user(
     return user
 
 
-@router.post("/register", tags=["users"], status_code=status.HTTP_201_CREATED, response_model=User)
+@router.post(
+    "/register",
+    tags=["users"],
+    status_code=status.HTTP_201_CREATED,
+    response_model=User,
+)
 async def register(user_info: UserCreate, session: Session = Depends(get_session)):
     """
     Creates a user account.
