@@ -2,7 +2,7 @@ from typing import List
 
 from sqlmodel import select
 
-from src.models.leave_requests import LeaveRequest
+from src.models.leave_requests import LeaveRequest, LeaveRequestStatus
 from src.services.base import BaseService
 
 
@@ -54,7 +54,17 @@ class LeaveRequestService(BaseService):
         Deletes a leave request.
         :param leave_request_id: The id of the leave request to delete.
         """
-        query = select(LeaveRequest).where(LeaveRequest.id == leave_request_id)
-        result = self.session.exec(query).one()
-        self.session.delete(result)
+        leave_request = self.get_leave_request_by_id(leave_request_id)
+        self.session.delete(leave_request)
+        self.session.commit()
+
+    def set_leave_request_status(self, leave_request_id: int, status: LeaveRequestStatus) -> None:
+        """
+        Sets the status of a leave request.
+        :param leave_request_id: The id of the leave request to set.
+        :param status: The status to set.
+        """
+        leave_request = self.get_leave_request_by_id(leave_request_id)
+        leave_request.status = status
+        self.session.add(leave_request)
         self.session.commit()

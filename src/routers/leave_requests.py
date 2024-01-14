@@ -1,11 +1,11 @@
 from typing import Annotated, List
 
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session
 
 from src.database import get_session
-from src.models.leave_requests import LeaveRequest
+from src.models.leave_requests import LeaveRequest, LeaveRequestStatus
 from src.models.users import User
 from src.routers.users import get_current_user
 from src.schemas.leave_requests import LeaveRequestCreate
@@ -59,3 +59,33 @@ async def delete_leave_request(
     leave_days: int = days_between(leave_request.start_date, leave_request.end_date)
     UserService(session).increment_remaining_leave_days(leave_days)
     LeaveRequestService(session).delete_leave_request(leave_request_id)
+
+
+@router.put("/api/approve-leave-request/{leave_request_id}", tags=["leave-requests"])
+async def approve_leave_request(
+        leave_request_id: int,
+        current_user: Annotated[User, Depends(get_current_user)],
+        session: Session = Depends(get_session),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Sussy activity detected.",
+        )
+
+    LeaveRequestService(session).set_leave_request_status(leave_request_id, LeaveRequestStatus.approved)
+
+
+@router.put("/api/deny-leave-request/{leave_request_id}", tags=["leave-requests"])
+async def approve_leave_request(
+        leave_request_id: int,
+        current_user: Annotated[User, Depends(get_current_user)],
+        session: Session = Depends(get_session),
+):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Sussy activity detected.",
+        )
+
+    LeaveRequestService(session).set_leave_request_status(leave_request_id, LeaveRequestStatus.denied)
