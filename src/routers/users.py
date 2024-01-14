@@ -62,7 +62,7 @@ async def login(
     Logs a user into their account.
     """
     user: User = UserService(session).get_user_by_username(username=form_data.username)
-    if not user or not hasher.verify(form_data.password, bytes(user.hashed_password, "utf-8")):
+    if not user or not hasher.verify(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password.",
