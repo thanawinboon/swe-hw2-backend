@@ -1,4 +1,6 @@
-from sqlmodel import Field, SQLModel
+import enum
+
+from sqlmodel import Field, SQLModel, Column, Enum
 from typing import Optional
 
 
@@ -8,3 +10,4 @@ class User(SQLModel, table=True):
     username: str = Field(index=True)
     hashed_password: bytes
     remaining_leave_days: int = Field(default=42)
+    is_admin: bool = Field(default=False)
