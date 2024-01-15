@@ -81,7 +81,6 @@ def test_login_user(session: Session, client: TestClient):
         headers={"content-type": "application/x-www-form-urlencoded"},
     )
     data = response.json()
-    print(data)
     assert response.status_code == status.HTTP_200_OK
     assert data["token_type"] == "bearer"
     assert data["access_token"] == username
