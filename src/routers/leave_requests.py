@@ -61,7 +61,9 @@ async def delete_leave_request(
         leave_request_id
     )
     leave_days: int = days_between(leave_request.start_date, leave_request.end_date)
-    UserService(session).increment_remaining_leave_days(current_user.username, leave_days)
+    UserService(session).increment_remaining_leave_days(
+        current_user.username, leave_days
+    )
     LeaveRequestService(session).delete_leave_request(leave_request_id)
 
 
