@@ -37,9 +37,6 @@ async def get_current_user(
     response_model=User,
 )
 async def register(user_info: UserCreate, session: Session = Depends(get_session)):
-    """
-    Creates a user account.
-    """
     if (
         UserService(session).get_user_by_username(username=user_info.username)
         is not None
@@ -63,9 +60,6 @@ async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Session = Depends(get_session),
 ):
-    """
-    Logs a user into their account.
-    """
     user: User = UserService(session).get_user_by_username(username=form_data.username)
     if not user or not hasher.verify(form_data.password, user.hashed_password):
         raise HTTPException(
