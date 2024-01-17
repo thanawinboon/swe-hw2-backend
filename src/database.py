@@ -8,10 +8,10 @@ from src.utils import hasher
 
 load_dotenv()
 
-DATABASE_USER = os.getenv("DATABASE_USER")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DATABASE_DB = os.getenv("DATABASE_DB")
-DATABASE_PORT = os.getenv("DATABASE_PORT")
+DATABASE_USER = os.getenv("DATABASE_USER", "root")
+DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "hardpass")
+DATABASE_DB = os.getenv("DATABASE_DB", "leave_request")
+DATABASE_PORT = os.getenv("DATABASE_PORT", "3306")
 
 DATABASE_URL = (
     f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}"
