@@ -33,6 +33,14 @@ async def create_leave_request(
         requester=current_user,
         **leave_request_info.model_dump()
     )
+    # TODO: find a way to specify problem
+    can_request_leave: bool = LeaveRequestService(session).leave_request_allowed(leave_request=leave_request)
+    if not can_request_leave:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Leave request invalid.",
+        )
+
     LeaveRequestService(session).create_leave_request(leave_request=leave_request)
 
     days_requested: int = days_between(leave_request.start_date, leave_request.end_date)

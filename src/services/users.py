@@ -49,3 +49,22 @@ class UserService(BaseService):
         user.remaining_leave_days -= days
         self.session.add(user)
         self.session.commit()
+
+    def reset_remaining_leave_days(self, username: str) -> None:
+        # should be ran by scheduler (e.g. cronjob)
+        """
+        Resets the remaining leave days of the user to 10.
+        :param username: The username of the user to query.
+        """
+        user: User = self.get_user_by_username(username)
+        user.remaining_leave_days = 10
+        self.session.add(user)
+        self.session.commit()
+    
+    def get_leave_days_by_user_id(self, user_id: int) -> int:
+        """
+        Gets the remaining leave days of the user.
+        :param user_id: The id of the user to query.
+        """
+        user: User = self.get_user_by_username(user_id)
+        return user.remaining_leave_days
