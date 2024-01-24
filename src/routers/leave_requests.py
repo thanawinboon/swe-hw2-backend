@@ -71,6 +71,12 @@ async def delete_leave_request(
     leave_request: LeaveRequest = LeaveRequestService(session).get_leave_request_by_id(
         leave_request_id
     )
+    if leave_request.status != LeaveRequestStatus.pending:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete resolved leave request.",
+        )
+    
     leave_days: int = days_between(leave_request.start_date, leave_request.end_date)
     UserService(session).increment_remaining_leave_days(
         current_user.username, leave_days
