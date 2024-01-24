@@ -104,6 +104,12 @@ class LeaveRequestService(BaseService):
         :param leave_request: The leave request to check.
         :return: True if the user can request for leave, False otherwise.
         """
+
+        current_date = datetime.now().date()
+        two_months_from_now = current_date + datetime.timedelta(days=60)
+        if leave_request.end_date >= two_months_from_now:
+            return False
+
         date_range = (leave_request.start_date, leave_request.end_date)
         request_date_valid = self.valid_leave_request_date_range(leave_request.requester_id, date_range)
 
