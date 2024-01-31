@@ -1,8 +1,8 @@
 import enum
-
-from sqlmodel import Field, SQLModel, Column, Enum
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from sqlmodel import Column, Enum, Field, SQLModel
 
 
 class LeaveRequestStatus(str, enum.Enum):

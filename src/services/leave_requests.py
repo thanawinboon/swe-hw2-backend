@@ -1,5 +1,5 @@
-from typing import List, Tuple
 from datetime import datetime
+from typing import List, Tuple
 
 from sqlmodel import select
 
@@ -75,10 +75,8 @@ class LeaveRequestService(BaseService):
         self.session.commit()
 
     def valid_leave_request_date_range(
-            self, 
-            requester_id: int, 
-            requested_date_range: Tuple[datetime]
-            ) -> bool:
+        self, requester_id: int, requested_date_range: Tuple[datetime]
+    ) -> bool:
         """
         Checks if a user can request for leave on a given day.
         :param requester_id: The id of the user to check.
@@ -90,14 +88,22 @@ class LeaveRequestService(BaseService):
         query = select(LeaveRequest).where(LeaveRequest.requester_id == requester_id)
 
         for leave_request in self.session.exec(query).all():
-            start_date_in_range = leave_request.start_date <= requested_date_range[START_DATE_INDEX] <= leave_request.end_date
-            end_date_in_range = leave_request.start_date <= requested_date_range[END_DATE_INDEX] <= leave_request.end_date
+            start_date_in_range = (
+                leave_request.start_date
+                <= requested_date_range[START_DATE_INDEX]
+                <= leave_request.end_date
+            )
+            end_date_in_range = (
+                leave_request.start_date
+                <= requested_date_range[END_DATE_INDEX]
+                <= leave_request.end_date
+            )
             if start_date_in_range:
                 return False
             if end_date_in_range:
                 return False
         return True
-    
+
     def leave_request_allowed(self, leave_request: LeaveRequest) -> bool:
         """
         Checks if a user can request for leave.
@@ -111,10 +117,16 @@ class LeaveRequestService(BaseService):
             return False
 
         date_range = (leave_request.start_date, leave_request.end_date)
-        request_date_valid = self.valid_leave_request_date_range(leave_request.requester_id, date_range)
+        request_date_valid = self.valid_leave_request_date_range(
+            leave_request.requester_id, date_range
+        )
 
-        days_requested: int = days_between(leave_request.start_date, leave_request.end_date)
-        user_remaining_leave_days: int = UserService(self.session).get_leave_days_by_user_id(leave_request.requester_id)
+        days_requested: int = days_between(
+            leave_request.start_date, leave_request.end_date
+        )
+        user_remaining_leave_days: int = UserService(
+            self.session
+        ).get_leave_days_by_user_id(leave_request.requester_id)
         has_enough_leave_days = days_requested <= user_remaining_leave_days
 
         return request_date_valid and has_enough_leave_days

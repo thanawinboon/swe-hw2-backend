@@ -60,7 +60,7 @@ class UserService(BaseService):
         user.remaining_leave_days = 10
         self.session.add(user)
         self.session.commit()
-    
+
     def get_leave_days_by_user_id(self, user_id: int) -> int:
         """
         Gets the remaining leave days of the user.

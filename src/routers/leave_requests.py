@@ -1,7 +1,7 @@
 from typing import Annotated, List
 
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session
 
 from src.database import get_session
@@ -27,14 +27,16 @@ async def create_leave_request(
     leave_request_info: LeaveRequestCreate,
     current_user: Annotated[User, Depends(get_current_user)],
     session: Session = Depends(get_session),
-):
+) -> LeaveRequest:
     leave_request: LeaveRequest = LeaveRequest(
         requester_id=current_user.id,
         requester=current_user,
         **leave_request_info.model_dump()
     )
     # TODO: find a way to specify problem
-    can_request_leave: bool = LeaveRequestService(session).leave_request_allowed(leave_request=leave_request)
+    can_request_leave: bool = LeaveRequestService(session).leave_request_allowed(
+        leave_request=leave_request
+    )
     if not can_request_leave:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -55,7 +57,7 @@ async def create_leave_request(
 async def get_all_leave_requests(
     current_user: Annotated[User, Depends(get_current_user)],
     session: Session = Depends(get_session),
-):
+) -> List[LeaveRequest]:
     leave_requests: List[LeaveRequest] = LeaveRequestService(
         session
     ).get_all_leave_requests()
@@ -67,7 +69,7 @@ async def delete_leave_request(
     leave_request_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
     session: Session = Depends(get_session),
-):
+) -> None:
     leave_request: LeaveRequest = LeaveRequestService(session).get_leave_request_by_id(
         leave_request_id
     )
@@ -76,7 +78,7 @@ async def delete_leave_request(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot delete resolved leave request.",
         )
-    
+
     leave_days: int = days_between(leave_request.start_date, leave_request.end_date)
     UserService(session).increment_remaining_leave_days(
         current_user.username, leave_days
@@ -89,7 +91,7 @@ async def approve_leave_request(
     leave_request_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
     session: Session = Depends(get_session),
-):
+) -> None:
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -106,7 +108,7 @@ async def deny_leave_request(
     leave_request_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
     session: Session = Depends(get_session),
-):
+) -> None:
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
