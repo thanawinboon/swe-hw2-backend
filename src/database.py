@@ -1,22 +1,20 @@
 import os
 
-from sqlmodel import SQLModel, Session, create_engine, select
 from dotenv import load_dotenv
+from sqlmodel import Session, SQLModel, create_engine, select
 
 from src.models.users import User
 from src.utils import hasher
 
 load_dotenv()
 
-DATABASE_USER = os.getenv("DATABASE_USER", "root")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "hardpass")
-DATABASE_DB = os.getenv("DATABASE_DB", "leave_request")
-DATABASE_PORT = os.getenv("DATABASE_PORT", "3306")
+DB_USER = os.environ.get("DB_USER", "postgres")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "postgres")
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = os.environ.get("DB_PORT", 5432)
+DB_NAME = os.environ.get("DB_NAME", "postgres")
 
-DATABASE_URL = (
-    f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}"
-    f"@localhost:{DATABASE_PORT}/{DATABASE_DB}"
-)
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL)
 

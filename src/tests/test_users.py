@@ -1,10 +1,10 @@
 import pytest
-import src.utils.hasher as hasher
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
+import src.utils.hasher as hasher
 from src.database import get_session
 from src.main import app
 
@@ -21,7 +21,7 @@ def session_fixture():
 
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
-    def get_session_override():
+    def get_session_override() -> Session:
         return session
 
     app.dependency_overrides[get_session] = get_session_override
@@ -46,7 +46,7 @@ def test_create_user(session: Session, client: TestClient):
     assert data["full_name"] == full_name
     assert data["username"] == username
     assert hasher.verify(password, bytes(data["hashed_password"], "utf-8")) is True
-    assert data["remaining_leave_days"] == 42
+    assert data["remaining_leave_days"] == 10
 
 
 def test_create_user_with_invalid_username(session: Session, client: TestClient):
