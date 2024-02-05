@@ -61,10 +61,13 @@ class UserService(BaseService):
         self.session.add(user)
         self.session.commit()
 
-    def get_leave_days_by_user_id(self, user_id: int) -> int:
+    def get_user_by_user_id(self, user_id: int) -> int:
         """
-        Gets the remaining leave days of the user.
-        :param user_id: The id of the user to query.
+        Queries the database for a user by their id.
+        :param username: The username to query.
+        :return: `User` corresponding to the username or `None` if no user with that
+        username exists.
         """
-        user: User = self.get_user_by_username(user_id)
-        return user.remaining_leave_days
+        query = select(User).where(User.id == user_id)
+        result = self.session.exec(query).one_or_none()
+        return result

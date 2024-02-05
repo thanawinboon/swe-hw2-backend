@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Tuple
 
 from sqlmodel import select
 
 from src.models.leave_requests import LeaveRequest, LeaveRequestStatus
+from src.models.users import User
 from src.services.base import BaseService
 from src.services.users import UserService
 from src.utils.time_calc import days_between
@@ -112,8 +113,8 @@ class LeaveRequestService(BaseService):
         """
 
         current_date = datetime.now().date()
-        two_months_from_now = current_date + datetime.timedelta(days=60)
-        if leave_request.end_date >= two_months_from_now:
+        two_months_from_now = current_date + timedelta(days=60)
+        if leave_request.end_date.date() >= two_months_from_now:
             return False
 
         date_range = (leave_request.start_date, leave_request.end_date)
@@ -124,9 +125,9 @@ class LeaveRequestService(BaseService):
         days_requested: int = days_between(
             leave_request.start_date, leave_request.end_date
         )
-        user_remaining_leave_days: int = UserService(
-            self.session
-        ).get_leave_days_by_user_id(leave_request.requester_id)
-        has_enough_leave_days = days_requested <= user_remaining_leave_days
+        user: User = UserService(self.session).get_user_by_user_id(
+            leave_request.requester_id
+        )
+        has_enough_leave_days = days_requested <= user.remaining_leave_days
 
         return request_date_valid and has_enough_leave_days

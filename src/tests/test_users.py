@@ -14,7 +14,9 @@ REGISTER_URL = "/register"
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
-        "postgresql://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
