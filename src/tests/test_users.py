@@ -8,11 +8,13 @@ import src.utils.hasher as hasher
 from src.database import get_session
 from src.main import app
 
+REGISTER_URL = "/register"
+
 
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
+        "postgresql://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
@@ -37,7 +39,7 @@ def test_create_user(session: Session, client: TestClient):
     full_name = "test user"
 
     response = client.post(
-        "/register",
+        REGISTER_URL,
         json={"username": username, "password": password, "full_name": full_name},
     )
     data = response.json()
@@ -53,15 +55,16 @@ def test_create_user_with_invalid_username(session: Session, client: TestClient)
     username = "test"
     password = "password"
     full_name = "test user"
+    json = {"username": username, "password": password, "full_name": full_name}
 
-    response = client.post(
-        "/register",
-        json={"username": username, "password": password, "full_name": full_name},
+    client.post(
+        REGISTER_URL,
+        json=json,
     )
 
     response = client.post(
-        "/register",
-        json={"username": username, "password": password, "full_name": full_name},
+        REGISTER_URL,
+        json=json,
     )
     data = response.json()
 

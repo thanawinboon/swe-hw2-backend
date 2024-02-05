@@ -33,7 +33,6 @@ async def create_leave_request(
         requester=current_user,
         **leave_request_info.model_dump()
     )
-    # TODO: find a way to specify problem
     can_request_leave: bool = LeaveRequestService(session).leave_request_allowed(
         leave_request=leave_request
     )
